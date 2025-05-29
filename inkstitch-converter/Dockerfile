@@ -42,9 +42,9 @@ WORKDIR /opt/inkstitch
 # Install Ink/Stitch dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt || true
 
-# Create conversion script
-COPY convert.py /opt/convert.py
-COPY server.py /opt/server.py
+# Create conversion script - fix the copy paths
+COPY inkstitch-converter/convert.py /opt/convert.py
+COPY inkstitch-converter/server.py /opt/server.py
 
 # Set working directory
 WORKDIR /opt
