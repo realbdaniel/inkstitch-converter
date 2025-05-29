@@ -1,4 +1,4 @@
-# Use Ubuntu as base image for better compatibility with Inkscape/Ink/Stitch
+# Use Ubuntu as base image
 FROM ubuntu:22.04
 
 # Set environment variables
@@ -6,14 +6,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:99
 ENV PORT=5000
 
-# Install system dependencies with retries and alternative mirrors
+# Install system dependencies - simplified approach
 RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    && add-apt-repository ppa:inkscape.dev/stable \
-    && apt-get update && apt-get install -y \
     python3 \
     python3-pip \
-    inkscape \
     xvfb \
     wget \
     curl \
@@ -23,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     libxslt-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies for Ink/Stitch
+# Install Python dependencies
 RUN pip3 install --no-cache-dir \
     lxml \
     numpy \
@@ -32,17 +28,10 @@ RUN pip3 install --no-cache-dir \
     networkx \
     flask \
     requests \
-    gunicorn
+    gunicorn \
+    pyembroidery
 
-# Download and install Ink/Stitch
-WORKDIR /opt
-RUN git clone https://github.com/inkstitch/inkstitch.git
-WORKDIR /opt/inkstitch
-
-# Install Ink/Stitch dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt || true
-
-# Create conversion script - fix the copy paths
+# Copy our conversion scripts
 COPY inkstitch-converter/convert.py /opt/convert.py
 COPY inkstitch-converter/server.py /opt/server.py
 
